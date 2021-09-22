@@ -1,5 +1,6 @@
 // The Promise API is only availble via dot notation prior to node v14.0.0
-import * as fs from 'fs/promises';
+//import * as fs from 'fs/promises';
+import fs from 'fs'
 //import * as XMLconverter from 'xml-js';
 //const COLLECTIONS = './collections';
 
@@ -12,21 +13,24 @@ class DSpaceCollection {
      */
     constructor(src) {
         this.src = src;
+        this.items = {};
+        this._addItems();
     }
 
-    async printContents() {
+    _addItems() {
         try {
-            const contents = await fs.readdir(this.src, 'utf-8');
-            console.log(contents.splice(1)); // remove .DS_Store
-            //console.log(contents);
+            const contents = fs.readdirSync(this.src, 'utf-8');
+            contents.splice(1).forEach(item => {
+                this.items[item] = fs.readdirSync(this.src + '/' + item, 'utf-8');
+            })
         } catch (err) {
-            console.error(err);
+            console.error(err)
         }
     }
 }
 
 const collection = new DSpaceCollection('../../collections/collection_67')
-collection.printContents()
+console.log(collection.items['1'])
 
 /*readCollection('collection_67')
     .then(folders => { 
