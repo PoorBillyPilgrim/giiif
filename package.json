@@ -1,0 +1,24 @@
+{
+  "name": "giiif",
+  "version": "0.0.1",
+  "description": "Node.js package for creating iiif manifests",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard --fix"
+  },
+  "engines": {
+    "node": "14.17.6"
+  },
+  "keywords": [
+    "iiif",
+    "nodejs"
+  ],
+  "author": "Tyler Jones",
+  "license": "MIT",
+  "dependencies": {
+    "sharp": "^0.29.1"
+  },
+  "devDependencies": {
+    "standard": "^16.0.3"
+  }
+}
