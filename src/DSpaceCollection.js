@@ -1,6 +1,6 @@
 // The Promise API is only availble via dot notation prior to node v14.0.0
-//import * as fs from 'fs/promises';
-import fs from 'fs'
+import * as fs from 'fs/promises';
+//import fs from 'fs'
 //import * as XMLconverter from 'xml-js';
 //const COLLECTIONS = './collections';
 
@@ -13,31 +13,35 @@ class DSpaceCollection {
      */
     constructor(src) {
         this.src = src;
-        this.items = {};
-        this._addItems();
+        this.items();
     }
 
-    _addItems() {
+    /** add collection src items as an object of arrays */
+    async items() {
         try {
-            const contents = fs.readdirSync(this.src, 'utf-8');
-            contents.splice(1).forEach(item => {
-                this.items[item] = fs.readdirSync(this.src + '/' + item, 'utf-8');
-            })
+            const items = await fs.readdir(this.src, { encoding: 'utf-8', withFileTypes: true });
+            for (let item of items) {
+                if (item.isDirectory()) {
+                    this.items[item.name] = await fs.readdir(this.src +'/' + item.name, 'utf-8')
+                }
+            }
+            return this.items
         } catch (err) {
             console.error(err)
         }
     }
+
+    /*async getItems(collection) {
+        
+    }*/
 }
 
 const collection = new DSpaceCollection('../../collections/collection_67')
-console.log(collection.items['1'])
+collection.items().then((items) => console.log(items))
 
-/*readCollection('collection_67')
-    .then(folders => { 
-        return convertFiles(folders);
-    })
-    .then(() => console.log("files converted"))
-    .catch(err => console.error(err))
+//console.log(collection.items['1'])
+
+/*
 
 
 const convertFiles = (folders) => {
