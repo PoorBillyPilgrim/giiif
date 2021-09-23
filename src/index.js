@@ -1,4 +1,4 @@
 import * as sharp from 'sharp'
-import { tiff } from './tiff/index.js'
+import { tiff } from './tiff.js'
 
 console.log(tiff)

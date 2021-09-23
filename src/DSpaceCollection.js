@@ -1,73 +1,76 @@
 // The Promise API is only availble via dot notation prior to node v14.0.0
-import * as fs from 'fs/promises';
-import * as XMLconverter from 'xml-js';
-//const COLLECTIONS = './collections';
+import * as fs from 'fs/promises'
+import * as XMLconverter from 'xml-js'
+// const COLLECTIONS = './collections';
 
 /** Class representating a DSpace collection */
 class DSpaceCollection {
-
-    /**
+  /**
      * Create a DSpace collection
-     * @param {String} src - file path to folder containing DSpace dublin_core.xml and image 
+     * @param {String} src - file path to folder containing DSpace dublin_core.xml and image
      */
-    constructor(src) {
-        this.src = src;
-    }
+  constructor (src) {
+    this.src = src
+  }
 
-    /** add collection src items as an object of arrays */
-    async items() {
-        try {
-            let contents = [];
-            const items = await fs.readdir(this.src, { encoding: 'utf-8', withFileTypes: true });
-            for (let item of items) {
-                if (item.isDirectory()) {
-                    let files = await fs.readdir(this.src +'/' + item.name, 'utf-8')
-                    let entry = {id: item.name, files: files}
-                    contents.push(entry)
-                }
-            }
-            return contents
-        } catch (err) {
-            console.error(err)
+  /** returns contents of collectino as array */
+  async items () {
+    try {
+      const contents = []
+      const items = await fs.readdir(this.src, { encoding: 'utf-8', withFileTypes: true })
+      for (const item of items) {
+        if (item.isDirectory()) {
+          const files = await fs.readdir(this.src + '/' + item.name, 'utf-8')
+          const entry = { id: item.name, files: files }
+          contents.push(entry)
         }
+      }
+      return contents
+    } catch (err) {
+      console.error(err)
     }
+  }
 
-    /** 
-     * Print metadata file 
-     * currently prints metadata file for item 1
+  /**
+     * returns metadata file as a Promise
+     * @param {Object} item
     */
-    async metadata(item) {
-        try {
-            let metadata = await fs.readFile(this.src + '/' + item.id + '/' + item.files[2], 'utf-8')
-            return metadata;
-        } catch (err) {
-            console.error(err)
-        }
+  async metadata (item) {
+    try {
+      const metadata = await fs.readFile(this.src + '/' + item.id + '/' + item.files[2], 'utf-8')
+      return metadata
+    } catch (err) {
+      console.error(err)
     }
+  }
 
-    async json(file) {
-        return new Promise((resolve, reject) => {
-            const json = XMLconverter.xml2json(file, {compact: true, spaces: 4});
-            resolve(json);
-        })
-    }
+  /**
+   * 
+   * @param {String} file - An XML string
+   * @returns {Promise} Promise object represents JSON
+   */
+  async json (file) {
+    return new Promise((resolve, reject) => {
+      const json = XMLconverter.xml2json(file, { compact: true, spaces: 4 })
+      resolve(json)
+    })
+  }
 }
 
 const collection = new DSpaceCollection('../../collections/collection_67')
-//console.log(collection.items().then((items) => collection.metadata(items[0])))
+// console.log(collection.items().then((items) => collection.metadata(items[0])))
 
 const printJSON = async (collection) => {
-    let items = await collection.items();
-    let metadata = await collection.metadata(items[0]);
-    let json = await collection.json(metadata);
-    console.log(json)
+  const items = await collection.items()
+  const metadata = await collection.metadata(items[0])
+  const json = await collection.json(metadata)
+  console.log(json)
 }
 
 printJSON(collection)
-//console.log(collection.items['1'])
+// console.log(collection.items['1'])
 
 /*
-
 
 const convertFiles = (folders) => {
     return folders.map(folder => {
@@ -103,4 +106,4 @@ const write = async (src, dest) => {
     } catch (err) {
         console.error(err);
     }
-}*/
+} */
