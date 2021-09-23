@@ -1,0 +1,1 @@
+{"@context":"http://iiif.io/api/presentation/3/context.json","id":"http://localhost:8080/iiif/test/manifest.json","type":"Manifest","label":{"en":["this is a label "]},"items":[],"metadata":[{"label":"title","value":"this is a title"}]}
