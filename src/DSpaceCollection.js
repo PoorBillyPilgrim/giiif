@@ -13,19 +13,31 @@ class DSpaceCollection {
      */
     constructor(src) {
         this.src = src;
-        this.items();
     }
 
     /** add collection src items as an object of arrays */
     async items() {
         try {
+            let contents = [];
             const items = await fs.readdir(this.src, { encoding: 'utf-8', withFileTypes: true });
             for (let item of items) {
                 if (item.isDirectory()) {
-                    this.items[item.name] = await fs.readdir(this.src +'/' + item.name, 'utf-8')
+                    let files = await fs.readdir(this.src +'/' + item.name, 'utf-8')
+                    let entry = {id: item.name, files: files}
+                    contents.push(entry)
                 }
             }
-            return this.items
+            return contents
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    /** print metadata file */
+    async metadata(item) {
+        try {
+            let metadata = await fs.readFile(this.src + '/' + item.id + '/' + item.files[2], 'utf-8')
+            console.log(metadata);
         } catch (err) {
             console.error(err)
         }
@@ -37,7 +49,10 @@ class DSpaceCollection {
 }
 
 const collection = new DSpaceCollection('../../collections/collection_67')
-collection.items().then((items) => console.log(items))
+collection.items()
+    .then((items) => {
+        collection.metadata(items[0])
+    })
 
 //console.log(collection.items['1'])
 
