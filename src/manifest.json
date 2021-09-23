@@ -1,0 +1,42 @@
+{
+  "@context": "http://iiif.io/api/presentation/3/context.json",
+  "id": "http://localhost:8080/iiif/test/manifest.json",
+  "type": "Manifest",
+  "label": {
+    "en": [
+      "this is a label "
+    ]
+  },
+  "items": [
+    {
+      "id": "localhost:8080/collections/collection_67/1/canvas",
+      "type": "Canvas",
+      "label": {
+        "en": [
+          "Canvas with a single IIIF image"
+        ]
+      },
+      "height": 500,
+      "width": 400,
+      "items": [
+        {
+          "id": "localhost:8080/collections/collection_67/1/page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "localhost:8080/collections/collection_67/1/annotation",
+              "type": "Annotation",
+              "motivation": "painting",
+              "body": {
+                "id": null,
+                "type": "Image",
+                "format": "image/jpeg"
+              },
+              "target": "localhost:8080/collections/collection_67/1/canvas"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
