@@ -1,7 +1,6 @@
 // The Promise API is only availble via dot notation prior to node v14.0.0
 import * as fs from 'fs/promises';
-//import fs from 'fs'
-//import * as XMLconverter from 'xml-js';
+import * as XMLconverter from 'xml-js';
 //const COLLECTIONS = './collections';
 
 /** Class representating a DSpace collection */
@@ -33,27 +32,38 @@ class DSpaceCollection {
         }
     }
 
-    /** print metadata file */
+    /** 
+     * Print metadata file 
+     * currently prints metadata file for item 1
+    */
     async metadata(item) {
         try {
             let metadata = await fs.readFile(this.src + '/' + item.id + '/' + item.files[2], 'utf-8')
-            console.log(metadata);
+            return metadata;
         } catch (err) {
             console.error(err)
         }
     }
 
-    /*async getItems(collection) {
-        
-    }*/
+    async json(file) {
+        return new Promise((resolve, reject) => {
+            const json = XMLconverter.xml2json(file, {compact: true, spaces: 4});
+            resolve(json);
+        })
+    }
 }
 
 const collection = new DSpaceCollection('../../collections/collection_67')
-collection.items()
-    .then((items) => {
-        collection.metadata(items[0])
-    })
+//console.log(collection.items().then((items) => collection.metadata(items[0])))
 
+const printJSON = async (collection) => {
+    let items = await collection.items();
+    let metadata = await collection.metadata(items[0]);
+    let json = await collection.json(metadata);
+    console.log(json)
+}
+
+printJSON(collection)
 //console.log(collection.items['1'])
 
 /*
