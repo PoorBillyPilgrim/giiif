@@ -1,6 +1,6 @@
-import Identifier from './identifier.js';
+import Template from './template.js';
 
-class Annotation extends Identifier {
+class Annotation extends Template {
     constructor(info) {
         super(info.id, "Annotation");
         this.motivation = "painting";

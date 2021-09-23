@@ -1,8 +1,8 @@
-import Identifier from './identifier.js'
+import Template from './template.js'
 
-class Presentation extends Identifier {
+class Presentation extends Template {
     constructor() {
-        this["@context"] = "http://iiif.io/api/presentation/3/context.json"
+        super()
     }
 }
 

@@ -1,12 +1,10 @@
 import fs from 'fs';
-import Presentation from './presentation.js';
+import Template from './template.js';
 
- export class Manifest extends Presentation {
+class Manifest extends Template {
     constructor(options) {
-        super(); // inherit this.props from Presentation
-        this.props.id = options.id;
-        this.props.type = "Manifest";
-        this.props.label = options.label;
+        super(options.id, "Manifest");
+        this.label = options.label;
     }
 
     toFile(options) {
@@ -19,18 +17,19 @@ import Presentation from './presentation.js';
     }
 
     print() {
-        console.log(this.props);
+        console.log(this);
     }
 }
 
+export default Manifest;
 /*
 const manifest = new Manifest({
     "id": "http://localhost:8080/iiif/test/manifest.json",
     "label": { "en": [ "this is a label "] }
 });
-manifest.setMetadata({
+/*manifest.setMetadata({
     "label": "title",
     "value": "this is a title"
 });
-manifest.toFile( {compact: true} ); // set to false for human readability, true to reduce file size
-*/
+//manifest.toFile( {compact: true} ); // set to false for human readability, true to reduce file size
+manifest.print()*/

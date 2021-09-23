@@ -1,6 +1,6 @@
-class Identifier {
+class Template {
     constructor(id, type) {
-        if (type === 'Presentation') this["@context"] = "http://iiif.io/api/presentation/3/context.json"
+        if (type === 'Presentation' || type === 'Manifest') this["@context"] = "http://iiif.io/api/presentation/3/context.json"
         this.id = id;
         this.type = type;
     }
@@ -15,4 +15,4 @@ class Identifier {
     }
 }
 
-export default Identifier;
+export default Template;
