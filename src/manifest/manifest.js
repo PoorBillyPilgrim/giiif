@@ -1,35 +1,42 @@
 import fs from 'fs';
 import Template from './template.js';
-
+/**
+ * Class representing Manifest resource type
+ * @extends Template
+ */
 class Manifest extends Template {
-    constructor(options) {
-        super(options.id, "Manifest");
-        this.label = options.label;
+    /**
+     * Create a Manifest
+     * @param {Object} info
+     * @param {string} info.id - unique URL for resource type
+     */
+    constructor(info) {
+        super(info.id, "Manifest");
+        this.label = info.label;
     }
 
-    toFile(options) {
-        let spaces = options.compact ? 0 : 2;
+    /**
+     * Write Manifest to file
+     * @param {Object} info 
+     * @param {boolean} info.compact - true to reduce file size, false for human readability
+     */
+    toFile(info) {
+        let spaces = info.compact ? 0 : 2;
         fs.writeFileSync('./test.json', JSON.stringify(this.props, null, spaces));
     }
 
+    /**
+     * Add metadata property to Manifest
+     * @param {Object} src - should be from a dublin_core.xml file
+     */
     setMetadata(src) {
-        this.props.metadata = [ src ];
+        this.metadata = [ src ];
     }
 
+    /** Log Manifest to console */
     print() {
         console.log(this);
     }
 }
 
 export default Manifest;
-/*
-const manifest = new Manifest({
-    "id": "http://localhost:8080/iiif/test/manifest.json",
-    "label": { "en": [ "this is a label "] }
-});
-/*manifest.setMetadata({
-    "label": "title",
-    "value": "this is a title"
-});
-//manifest.toFile( {compact: true} ); // set to false for human readability, true to reduce file size
-manifest.print()*/

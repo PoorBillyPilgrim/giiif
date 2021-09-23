@@ -1,6 +1,14 @@
 import Template from './template.js';
-
+/**
+ * Class representing Annotation resource type
+ * @extends Template
+ */
 class Annotation extends Template {
+    /**
+     * Create an Annotation
+     * @param {Object} info
+     * @param {string} info.id - unique URL for resource type
+     */
     constructor(info) {
         super(info.id, "Annotation");
         this.motivation = "painting";
