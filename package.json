@@ -16,7 +16,8 @@
   "author": "Tyler Jones",
   "license": "MIT",
   "dependencies": {
-    "sharp": "^0.29.1"
+    "sharp": "^0.29.1",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "standard": "^16.0.3"
