@@ -4,12 +4,12 @@ import Template from './template.js'
  * @extends Template
  */
 class Presentation extends Template {
-    /**
+  /**
      * Create a Presentation
      */
-    constructor() {
-        super()
-    }
+  constructor () {
+    super()
+  }
 }
 
-export default Presentation;
+export default Presentation

@@ -4,14 +4,14 @@ import Template from './template.js'
  * @extends Template
  */
 class AnnotationPage extends Template {
-    /**
+  /**
      * Create an AnnotationPage
      * @param {Object} info
      * @param {string} info.id - unique URL for resource type
      */
-    constructor(info) {
-        super(info.id, "AnnotationPage")
-    }
+  constructor (info) {
+    super(info.id, 'AnnotationPage')
+  }
 }
 
-export default AnnotationPage;
+export default AnnotationPage
