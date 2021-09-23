@@ -19,10 +19,11 @@ class Manifest extends Template {
      * Write Manifest to file
      * @param {Object} info 
      * @param {boolean} info.compact - true to reduce file size, false for human readability
+     * @param {string} info.file - file path
      */
     toFile(info) {
         let spaces = info.compact ? 0 : 2;
-        fs.writeFileSync('./test.json', JSON.stringify(this.props, null, spaces));
+        fs.writeFileSync(info.file, JSON.stringify(this, null, spaces));
     }
 
     /**
