@@ -13,7 +13,9 @@ class DSpaceCollection {
     this.src = src
   }
 
-  /** returns contents of collectino as array */
+  /**
+   * @returns {Promise} - Promise array represents contents of collection
+   */
   async items () {
     try {
       const contents = []
@@ -32,8 +34,8 @@ class DSpaceCollection {
   }
 
   /**
-     * returns metadata file as a Promise
      * @param {Object} item
+     * @returns {Promise} - Promise object represents XML metadata
     */
   async metadata (item) {
     try {
@@ -45,7 +47,6 @@ class DSpaceCollection {
   }
 
   /**
-   * 
    * @param {String} file - An XML string
    * @returns {Promise} Promise object represents JSON
    */
