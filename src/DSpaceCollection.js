@@ -49,11 +49,9 @@ class DSpaceCollection {
      * @param {Object} item
      * @returns {Promise} - Promise object represents XML metadata
     */
-  async metadata (item) {
+  async metadata (id) {
     try {
-      const xml = /dublin_core.xml/
-      //Array.prototype.filter
-      const metadata = await fs.readFile(this.src + '/' + item.id + '/' + item.files[2], 'utf-8')
+      const metadata = await fs.readFile(`${this.src}/${id}/dublin_core.xml`, 'utf-8')
       return metadata
     } catch (err) {
       console.error(err)
@@ -75,12 +73,9 @@ class DSpaceCollection {
 }
 
 const collection = new DSpaceCollection('../../collections/collection_67')
-//console.log(collection.getItem('10'))
-console.log(Array.prototype.filter)
-  
-
-
-//collection.items().then(items => console.log(items))
+collection
+  .metadata('1')
+  .then(metadata => console.log(metadata))
 
 const printJSON = async (collection) => {
   const items = await collection.items()
