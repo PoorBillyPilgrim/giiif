@@ -1,10 +1,9 @@
-export const tiff = (image) => {
-  sharp(image)
-    .tiff({
-      tile: true,
-      pyramid: true
-    })
-    .toFile('./test.tif')
-    .then(info => console.log(info))
-    .catch(err => console.error(err))
+import sharp from 'sharp'
+
+const tiff = async (options) => {
+  return sharp(options.src)
+    .tiff(options.isPyramid)
+    .toFile(options.dest);
 }
+
+export default tiff;
