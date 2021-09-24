@@ -1,6 +1,7 @@
 // The Promise API is only availble via dot notation prior to node v14.0.0
 import * as fs from 'fs/promises'
 import * as XMLconverter from 'xml-js'
+//import tiff from 'tiff.js';
 // const COLLECTIONS = './collections';
 
 /** Class representating a DSpace collection */
@@ -18,13 +19,12 @@ class DSpaceCollection {
    */
   async items () {
     try {
-      const contents = []
+      const contents = {}
       const items = await fs.readdir(this.src, { encoding: 'utf-8', withFileTypes: true })
       for (const item of items) {
         if (item.isDirectory()) {
           const files = await fs.readdir(this.src + '/' + item.name, 'utf-8')
-          const entry = { id: item.name, files: files }
-          contents.push(entry)
+          contents[item.name] = files
         }
       }
       return contents
@@ -34,11 +34,25 @@ class DSpaceCollection {
   }
 
   /**
+   * 
+   * @param {string} id - Folder name for item in collection
+   * @returns {Promise} - Promise object representing Array containing names for files in item folder
+   */
+  async getItem(id) {
+    let items = await this.items()
+    return new Promise((resolve, reject) => {
+      resolve(items[id]);
+    })
+  }
+
+  /**
      * @param {Object} item
      * @returns {Promise} - Promise object represents XML metadata
     */
   async metadata (item) {
     try {
+      const xml = /dublin_core.xml/
+      //Array.prototype.filter
       const metadata = await fs.readFile(this.src + '/' + item.id + '/' + item.files[2], 'utf-8')
       return metadata
     } catch (err) {
@@ -56,10 +70,17 @@ class DSpaceCollection {
       resolve(json)
     })
   }
+
+  
 }
 
 const collection = new DSpaceCollection('../../collections/collection_67')
-// console.log(collection.items().then((items) => collection.metadata(items[0])))
+//console.log(collection.getItem('10'))
+console.log(Array.prototype.filter)
+  
+
+
+//collection.items().then(items => console.log(items))
 
 const printJSON = async (collection) => {
   const items = await collection.items()
@@ -68,7 +89,7 @@ const printJSON = async (collection) => {
   console.log(json)
 }
 
-printJSON(collection)
+//printJSON(collection)
 // console.log(collection.items['1'])
 
 /*
