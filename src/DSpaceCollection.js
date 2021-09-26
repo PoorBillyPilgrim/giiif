@@ -69,24 +69,62 @@ class DSpaceCollection {
     })
   }
 
-  
+  /**
+   * @param {String} file - An XML string
+   * @returns {Promise} Promise object represents JSON
+   */
+  async object (file) {
+    return new Promise((resolve, reject) => {
+      const json = XMLconverter.xml2js(file, { compact: true, spaces: 4 })
+      resolve(json)
+    })
+  }
 }
 
+/**
+ * for getting the image file from the XML-JSON, use a RegEx to search for xml.dcvalue[n]._text for "GTid"
+ */
+
 const collection = new DSpaceCollection('../../collections/collection_67')
-collection
+/*collection
   .metadata('1')
-  .then(metadata => console.log(metadata))
+  .then(metadata => console.log(metadata))*/
 
 const printJSON = async (collection) => {
   const items = await collection.items()
-  const metadata = await collection.metadata(items[0])
+  const metadata = await collection.metadata('1')
   const json = await collection.json(metadata)
-  console.log(json)
+  console.log(typeof json)
 }
 
 //printJSON(collection)
+const getMetadata = async (collection) => {
+  const items = await collection.items()
+  const metadata = await collection.metadata('1')
+  const object = await collection.object(metadata)
+  return object
+}
 // console.log(collection.items['1'])
+getMetadata(collection)
+  .then(metadata => {
 
+    metadata.dublin_core.dcvalue.forEach((x,idx) => {
+      if (x._attributes.qualifier.toLowerCase() === 'gtid') {
+        return x._text
+      }
+    })
+  })
+
+
+
+/*let arr = [
+  {'name': {'first': 'Tyler'}},
+  {'name': {'first': 'Sarah'}}
+]
+
+arr.find(el=> {
+  console.log(el.name.first.match(/Sarah/))
+})*/
 /*
 
 const convertFiles = (folders) => {
