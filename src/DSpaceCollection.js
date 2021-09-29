@@ -59,6 +59,22 @@ class DSpaceCollection {
   }
 
   /**
+   * returns dcvalue from dublin_core.xml
+   * @param {Object} metadata - Promise returned from this.object()
+   * @param {String} element - dcvalue.element (eg. identifier)
+   * @param {String} qualifier - dcvalue.qualifier (eg. gtid)
+   */
+   dcvalue (metadata, element, qualifier) {
+    let text
+    metadata.dublin_core.dcvalue.forEach((dcvalue) => {
+      if (dcvalue._attributes.element.toLowerCase() === element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === qualifier.toLowerCase()) {
+        text = dcvalue._text.toLowerCase()
+      }
+    })
+    return text
+  }
+
+  /**
    * @param {String} file - An XML string
    * @returns {Promise} Promise object represents JSON
    */
@@ -90,14 +106,13 @@ const collection = new DSpaceCollection('../../collections/collection_67')
   .metadata('1')
   .then(metadata => console.log(metadata))*/
 
-const printJSON = async (collection) => {
+const getJson = async (collection) => {
   const items = await collection.items()
   const metadata = await collection.metadata('1')
   const json = await collection.json(metadata)
-  console.log(typeof json)
+  return json
 }
 
-//printJSON(collection)
 const getMetadata = async (collection) => {
   const items = await collection.items()
   const metadata = await collection.metadata('1')
@@ -106,16 +121,20 @@ const getMetadata = async (collection) => {
 }
 // console.log(collection.items['1'])
 getMetadata(collection)
-  .then(metadata => { gtid(metadata)})
+  .then(metadata => { 
+    let value = collection.dcvalue(metadata, 'identifier', 'GTid')
+    console.log(value)
+  })
 
 
-const gtid = (metadata) => {
+
+  /*const dcvalue = (metadata, element, qualifier) => {
   metadata.dublin_core.dcvalue.forEach((dcvalue) => {
-    if (dcvalue._attributes.qualifier.toLowerCase() === 'gtid') {
-      console.log(dcvalue._text.toLowerCase())
+    if (dcvalue._attributes.element.toLowerCase() === element && dcvalue._attributes.qualifier.toLowerCase() === qualifier) {
+      return dcvalue._text.toLowerCase()
     }
   })
-}
+}*/
 //console.log(collection.src + '\n')
 
 
