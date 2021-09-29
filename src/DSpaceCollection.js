@@ -75,8 +75,8 @@ class DSpaceCollection {
    */
   async object (file) {
     return new Promise((resolve, reject) => {
-      const json = XMLconverter.xml2js(file, { compact: true, spaces: 4 })
-      resolve(json)
+      const object = XMLconverter.xml2js(file, { compact: true, spaces: 4 })
+      resolve(object)
     })
   }
 }
@@ -106,14 +106,17 @@ const getMetadata = async (collection) => {
 }
 // console.log(collection.items['1'])
 getMetadata(collection)
-  .then(metadata => {
+  .then(metadata => { gtid(metadata)})
 
-    metadata.dublin_core.dcvalue.forEach((x,idx) => {
-      if (x._attributes.qualifier.toLowerCase() === 'gtid') {
-        return x._text
-      }
-    })
+
+const gtid = (metadata) => {
+  metadata.dublin_core.dcvalue.forEach((dcvalue) => {
+    if (dcvalue._attributes.qualifier.toLowerCase() === 'gtid') {
+      console.log(dcvalue._text.toLowerCase())
+    }
   })
+}
+//console.log(collection.src + '\n')
 
 
 
