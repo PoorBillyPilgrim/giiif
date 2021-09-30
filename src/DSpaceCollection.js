@@ -65,13 +65,13 @@ class DSpaceCollection {
    * @param {String} qualifier - dcvalue.qualifier (eg. gtid)
    */
    dcvalue (metadata, element, qualifier) {
-    let text
+    let value
     metadata.dublin_core.dcvalue.forEach((dcvalue) => {
       if (dcvalue._attributes.element.toLowerCase() === element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === qualifier.toLowerCase()) {
-        text = dcvalue._text.toLowerCase()
+        value = dcvalue._text.toLowerCase()
       }
     })
-    return text
+    return value
   }
 
   /**
@@ -97,15 +97,10 @@ class DSpaceCollection {
   }
 }
 
-/**
- * for getting the image file from the XML-JSON, use a RegEx to search for xml.dcvalue[n]._text for "GTid"
- */
-
+// create a DSpaceCollection instance
 const collection = new DSpaceCollection('../../collections/collection_67')
-/*collection
-  .metadata('1')
-  .then(metadata => console.log(metadata))*/
 
+  // return XML as JSON
 const getJson = async (collection) => {
   const items = await collection.items()
   const metadata = await collection.metadata('1')
@@ -113,31 +108,19 @@ const getJson = async (collection) => {
   return json
 }
 
+// return XML of first item in collection as JS Object
 const getMetadata = async (collection) => {
   const items = await collection.items()
   const metadata = await collection.metadata('1')
   const object = await collection.object(metadata)
   return object
 }
-// console.log(collection.items['1'])
+
+// return GTid of first item in collection
 getMetadata(collection)
   .then(metadata => { 
-    let value = collection.dcvalue(metadata, 'identifier', 'GTid')
-    console.log(value)
+    console.log(collection.dcvalue(metadata, 'identifier', 'GTid'))
   })
-
-
-
-  /*const dcvalue = (metadata, element, qualifier) => {
-  metadata.dublin_core.dcvalue.forEach((dcvalue) => {
-    if (dcvalue._attributes.element.toLowerCase() === element && dcvalue._attributes.qualifier.toLowerCase() === qualifier) {
-      return dcvalue._text.toLowerCase()
-    }
-  })
-}*/
-//console.log(collection.src + '\n')
-
-
 
 /*let arr = [
   {'name': {'first': 'Tyler'}},
