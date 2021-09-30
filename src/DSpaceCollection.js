@@ -63,14 +63,16 @@ class DSpaceCollection {
    * @param {Object} metadata - Promise returned from this.object()
    * @param {String} element - dcvalue.element (eg. identifier)
    * @param {String} qualifier - dcvalue.qualifier (eg. gtid)
+   * @returns {Promise} - Promise representing dcvalue as a string
    */
-   dcvalue (metadata, element, qualifier) {
+   async getDcvalue (item, element, qualifier) {
     let value
+    const metadata = await this.getItemMetadata(item)
     metadata.dublin_core.dcvalue.forEach((dcvalue) => {
-      if (dcvalue._attributes.element.toLowerCase() === element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === qualifier.toLowerCase()) {
-        value = dcvalue._text.toLowerCase()
-      }
-    })
+        if (dcvalue._attributes.element.toLowerCase() === element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === qualifier.toLowerCase()) {
+          value = dcvalue._text.toLowerCase()
+        }
+      })
     return value
   }
 
@@ -86,6 +88,17 @@ class DSpaceCollection {
   }
 
   /**
+   * 
+   * @param {String} item - index of item in collection 
+   * @returns {Promise} - Promise object representing JSON for one item
+   */
+  async getItemJson (item) {
+    const metadata = await this.metadata(item)
+    const json = await this.json(metadata)
+    return json
+  }
+
+  /**
    * @param {String} file - An XML string
    * @returns {Promise} Promise object represents JSON
    */
@@ -95,32 +108,59 @@ class DSpaceCollection {
       resolve(object)
     })
   }
+
+  /**
+   * @param {String} item - index of item in collection
+   * @returns {Promise} - Promise object represents JS object for one item
+   */
+  async getItemMetadata (item) {
+    const metadata = await this.metadata(item)
+    const object = await this.object(metadata)
+    return object
+  }
+
+
 }
 
 // create a DSpaceCollection instance
 const collection = new DSpaceCollection('../../collections/collection_67')
 
-  // return XML as JSON
-const getJson = async (collection) => {
-  const items = await collection.items()
-  const metadata = await collection.metadata('1')
-  const json = await collection.json(metadata)
-  return json
-}
+// return XML as JSON
+//collection.getItemJson('1').then(json => console.log(json))
 
 // return XML of first item in collection as JS Object
-const getMetadata = async (collection) => {
-  const items = await collection.items()
-  const metadata = await collection.metadata('1')
-  const object = await collection.object(metadata)
-  return object
-}
+//collection.getItemMetadata('1').then(obj => console.log(obj))
 
 // return GTid of first item in collection
-getMetadata(collection)
+/*collection
+  .getDcvalue('1', 'identifier', 'GTid')
+  .then(value => console.log(value))*/
+
+collection
+  .getDcvalue('1', 'identifier', 'GTid')
+  .then(value => {
+    let index = value.search(/-|_/)
+    let id = value.slice(index + 1)
+    return id
+  })
+  .then(async (id) => {
+    let regex = new RegExp(id)
+    const item = await collection.getItem(('1'))
+    item.forEach(file => {
+      if (regex.test(file)) {
+        console.log(file)
+      }
+    })
+  })
+// 
+/*collection.getItemMetadata('1')
+  .then(metadata => {
+    console.log(collection.dcvalue(metadata, 'identifier', 'GTid'))
+  })*/
+/*getMetadata(collection)
   .then(metadata => { 
     console.log(collection.dcvalue(metadata, 'identifier', 'GTid'))
-  })
+  })*/
 
 /*let arr = [
   {'name': {'first': 'Tyler'}},
