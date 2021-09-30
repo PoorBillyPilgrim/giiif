@@ -60,16 +60,18 @@ class DSpaceCollection {
 
   /**
    * returns dcvalue from dublin_core.xml
-   * @param {Object} metadata - Promise returned from this.object()
-   * @param {String} element - dcvalue.element (eg. identifier)
-   * @param {String} qualifier - dcvalue.qualifier (eg. gtid)
+   * 
+   * @param {Object} options
+   * @param {Object} options.metadata - Promise returned from this.object()
+   * @param {String} options.element - dcvalue.element (eg. identifier)
+   * @param {String} options.qualifier - dcvalue.qualifier (eg. gtid)
    * @returns {Promise} - Promise representing dcvalue as a string
    */
-   async getDcvalue (item, element, qualifier) {
+   async getDcvalue (options) {
     let value
-    const metadata = await this.getItemMetadata(item)
+    const metadata = await this.getItemMetadata(options.item)
     metadata.dublin_core.dcvalue.forEach((dcvalue) => {
-        if (dcvalue._attributes.element.toLowerCase() === element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === qualifier.toLowerCase()) {
+        if (dcvalue._attributes.element.toLowerCase() === options.element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === options.qualifier.toLowerCase()) {
           value = dcvalue._text.toLowerCase()
         }
       })
@@ -119,7 +121,9 @@ class DSpaceCollection {
     return object
   }
 
+  async getItemImage() {
 
+  }
 }
 
 // create a DSpaceCollection instance
