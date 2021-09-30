@@ -144,10 +144,11 @@ collection
     return id
   })
   .then(async (id) => {
-    let regex = new RegExp(id)
+    let idRegex = new RegExp(id)
     const item = await collection.getItem(('1'))
     item.forEach(file => {
-      if (regex.test(file)) {
+      let singleExtension = new RegExp(/^[^.]+\.[^.]+$/)
+      if (idRegex.test(file) && singleExtension.test(file)) {
         console.log(file)
       }
     })
