@@ -5,7 +5,7 @@ import * as XMLconverter from 'xml-js'
 // const COLLECTIONS = './collections';
 
 /** Class representating a DSpace collection */
-class DSpaceCollection {
+class DspaceCollection {
   /**
      * Create a DSpace collection
      * @param {String} src - file path to folder containing DSpace dublin_core.xml and image
@@ -121,13 +121,23 @@ class DSpaceCollection {
     return object
   }
 
-  async getItemImage() {
-
+  async getItemImage(options) {
+    let value = await this.getDcvalue(options)
+    let index = value.search(/-|_/)
+    let id = value.slice(index + 1)
+    let idRegex = new RegExp(id)
+    const item = await collection.getItem(options.item)
+    item.forEach(file => {
+      let singleExtension = new RegExp(/^[^.]+\.[^.]+$/) // returns string with only one period, explanation: https://regex101.com/r/gDGQu3/1
+      if (idRegex.test(file) && singleExtension.test(file)) {
+        console.log(file)
+      }
+    })
   }
 }
 
-// create a DSpaceCollection instance
-const collection = new DSpaceCollection('../../collections/collection_67')
+// create a DspaceCollection instance
+const collection = new DspaceCollection('../../collections/collection_67')
 
 // return XML as JSON
 //collection.getItemJson('1').then(json => console.log(json))
@@ -144,9 +154,11 @@ const collection = new DSpaceCollection('../../collections/collection_67')
  * returns the GTid of the first item in the collection
  * then parses that GTid and extracts trailing identifier, i.e. removes collection name prefix
  * then gets all contents of first item and returns src image
+ * I can then pass this file name to sharp to create a pyramid tiff
  */
-collection
-  .getDcvalue('1', 'identifier', 'GTid')
+collection.getItemImage({item: '1', element: 'identifier', qualifier: 'GTid'})
+/*collection
+  .getDcvalue({item: '1', element: 'identifier', qualifier: 'GTid'})
   .then(value => {
     let index = value.search(/-|_/)
     let id = value.slice(index + 1)
@@ -161,7 +173,7 @@ collection
         console.log(file)
       }
     })
-  })
+  })*/
 // 
 /*collection.getItemMetadata('1')
   .then(metadata => {
