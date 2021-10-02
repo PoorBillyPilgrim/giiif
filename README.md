@@ -3,8 +3,8 @@ giiif is a Node.js project for generating IIIF v3 Manifests using information ga
 
 ## Example
 ```js
-import DSpaceCollection from 'giiif/src/DSpaceCollection.js'
-const collection = new DSpaceCollection(path)
+import DspaceCollection from 'giiif/src/DspaceCollection.js'
+const collection = new DspaceCollection(path)
 
 import { ManifestFactory } from 'giiif/src/manifest/index.js'
 
@@ -25,8 +25,8 @@ manifest.toFile({
 ```
 
 ## Features
-### DSpaceCollection Class
-The package offers a DSpaceCollection class that represents a single exported DSpace collection
+### DspaceCollection Class
+The package offers a DspaceCollection class that represents a single exported DSpace collection
 ```
 collection
     - item
