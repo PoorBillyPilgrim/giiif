@@ -14,7 +14,7 @@ const MANIFEST_CONFIG = {
     label: { en: ['this is a test label'] }
   },
   canvas: {
-    id:  `${ITEM_URL}/canvas`,
+    id: `${ITEM_URL}/canvas`,
     label: 'Canvas with a single IIIF image'
   },
   annotation: {
@@ -25,31 +25,24 @@ const MANIFEST_CONFIG = {
   }
 }
 
-
 const buildManifest = async (options) => {
   const res = await axios.get('http://localhost:8182/iiif/3/image.tif/info.json')
   // service contains the entire info.json from IIIF image server
   const service = res.data
-  //const id = 'localhost:8080/collections/collection_67/1'
 
-  //const manifestInfo = { id: 'http://localhost:8080/iiif/test/manifest.json', label: { en: ['this is a label '] } }
-  const manifestInfo = {id: options.manifest.id, label: options.manifest.label}
-  //const canvasInfo = { id: id + '/canvas', label: 'Canvas with a single IIIF image', height: service.height, width: service.width }
+  const manifestInfo = { id: options.manifest.id, label: options.manifest.label }
   const canvasInfo = { id: options.canvas.id, label: options.canvas.label, height: service.height, width: service.width }
-  //const annotationInfo = { id: id + '/annotation' }
   const annotationInfo = { id: options.annotation.id }
-  //const AnnotationPageInfo = { id: id + '/page' }
   const AnnotationPageInfo = { id: options.annotationPage.id }
 
   const manifest = new ManifestFactory.Manifest(manifestInfo)
   const canvas = new ManifestFactory.Canvas(canvasInfo)
   const annotation = new ManifestFactory.Annotation(annotationInfo)
   const annotationPage = new ManifestFactory.AnnotationPage(AnnotationPageInfo)
-  
-  
+
   // derive info needed to set annotation body from info.json for type Image
   annotation.setBody({
-    id: service.id + '/full/max/0/default.jpg', // entire Image API URL 
+    id: service.id + '/full/max/0/default.jpg', // entire Image API URL
     type: 'Image',
     format: 'image/jpeg',
     height: service.height, // from info.json
@@ -60,7 +53,7 @@ const buildManifest = async (options) => {
   annotationPage.addItems(annotation)
   canvas.addItems(annotationPage)
   manifest.addItems(canvas)
-  
+
   manifest.toFile({
     compact: false,
     file: './manifestTest.json'
@@ -70,5 +63,3 @@ const buildManifest = async (options) => {
 }
 
 buildManifest(MANIFEST_CONFIG)
-
-// fs.writeFile('./manifest.json', JSON.stringify(manifest, null, 2), () => console.log('file written'));

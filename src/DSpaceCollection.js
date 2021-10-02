@@ -1,7 +1,7 @@
 // The Promise API is only availble via dot notation prior to node v14.0.0
 import * as fs from 'fs/promises'
 import * as XMLconverter from 'xml-js'
-//import tiff from 'tiff.js';
+// import tiff from 'tiff.js';
 // const COLLECTIONS = './collections';
 
 /** Class representating a DSpace collection */
@@ -34,14 +34,14 @@ class DspaceCollection {
   }
 
   /**
-   * 
+   *
    * @param {string} id - Folder name for item in collection
    * @returns {Promise} - Promise object representing Array containing names for files in item folder
    */
-  async getItem(id) {
-    let items = await this.items()
+  async getItem (id) {
+    const items = await this.items()
     return new Promise((resolve, reject) => {
-      resolve(items[id]);
+      resolve(items[id])
     })
   }
 
@@ -60,21 +60,21 @@ class DspaceCollection {
 
   /**
    * returns dcvalue from dublin_core.xml
-   * 
+   *
    * @param {Object} options
    * @param {Object} options.metadata - Promise returned from this.object()
    * @param {String} options.element - dcvalue.element (eg. identifier)
    * @param {String} options.qualifier - dcvalue.qualifier (eg. gtid)
    * @returns {Promise} - Promise representing dcvalue as a string
    */
-   async getDcvalue (options) {
+  async getDcvalue (options) {
     let value
     const metadata = await this.getItemMetadata(options.item)
     metadata.dublin_core.dcvalue.forEach((dcvalue) => {
-        if (dcvalue._attributes.element.toLowerCase() === options.element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === options.qualifier.toLowerCase()) {
-          value = dcvalue._text.toLowerCase()
-        }
-      })
+      if (dcvalue._attributes.element.toLowerCase() === options.element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === options.qualifier.toLowerCase()) {
+        value = dcvalue._text.toLowerCase()
+      }
+    })
     return value
   }
 
@@ -90,8 +90,8 @@ class DspaceCollection {
   }
 
   /**
-   * 
-   * @param {String} item - index of item in collection 
+   *
+   * @param {String} item - index of item in collection
    * @returns {Promise} - Promise object representing JSON for one item
    */
   async getItemJson (item) {
@@ -121,14 +121,14 @@ class DspaceCollection {
     return object
   }
 
-  async getItemImage(options) {
-    let value = await this.getDcvalue(options)
-    let index = value.search(/-|_/)
-    let id = value.slice(index + 1)
-    let idRegex = new RegExp(id)
+  async getItemImage (options) {
+    const value = await this.getDcvalue(options)
+    const index = value.search(/-|_/)
+    const id = value.slice(index + 1)
+    const idRegex = new RegExp(id)
     const item = await collection.getItem(options.item)
     item.forEach(file => {
-      let singleExtension = new RegExp(/^[^.]+\.[^.]+$/) // returns string with only one period, explanation: https://regex101.com/r/gDGQu3/1
+      const singleExtension = /^[^.]+\.[^.]+$/ // returns string with only one period, explanation: https://regex101.com/r/gDGQu3/1
       if (idRegex.test(file) && singleExtension.test(file)) {
         console.log(file)
       }
@@ -140,15 +140,15 @@ class DspaceCollection {
 const collection = new DspaceCollection('../../collections/collection_67')
 
 // return XML as JSON
-//collection.getItemJson('1').then(json => console.log(json))
+// collection.getItemJson('1').then(json => console.log(json))
 
 // return XML of first item in collection as JS Object
-//collection.getItemMetadata('1').then(obj => console.log(obj))
+// collection.getItemMetadata('1').then(obj => console.log(obj))
 
 // return GTid of first item in collection
-/*collection
+/* collection
   .getDcvalue('1', 'identifier', 'GTid')
-  .then(value => console.log(value))*/
+  .then(value => console.log(value)) */
 
 /**
  * returns the GTid of the first item in the collection
@@ -156,8 +156,8 @@ const collection = new DspaceCollection('../../collections/collection_67')
  * then gets all contents of first item and returns src image
  * I can then pass this file name to sharp to create a pyramid tiff
  */
-collection.getItemImage({item: '1', element: 'identifier', qualifier: 'GTid'})
-/*collection
+collection.getItemImage({ item: '1', element: 'identifier', qualifier: 'GTid' })
+/* collection
   .getDcvalue({item: '1', element: 'identifier', qualifier: 'GTid'})
   .then(value => {
     let index = value.search(/-|_/)
@@ -173,25 +173,25 @@ collection.getItemImage({item: '1', element: 'identifier', qualifier: 'GTid'})
         console.log(file)
       }
     })
-  })*/
-// 
-/*collection.getItemMetadata('1')
+  }) */
+//
+/* collection.getItemMetadata('1')
   .then(metadata => {
     console.log(collection.dcvalue(metadata, 'identifier', 'GTid'))
-  })*/
-/*getMetadata(collection)
-  .then(metadata => { 
+  }) */
+/* getMetadata(collection)
+  .then(metadata => {
     console.log(collection.dcvalue(metadata, 'identifier', 'GTid'))
-  })*/
+  }) */
 
-/*let arr = [
+/* let arr = [
   {'name': {'first': 'Tyler'}},
   {'name': {'first': 'Sarah'}}
 ]
 
 arr.find(el=> {
   console.log(el.name.first.match(/Sarah/))
-})*/
+}) */
 /*
 
 const convertFiles = (folders) => {
