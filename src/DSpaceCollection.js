@@ -35,23 +35,23 @@ class DspaceCollection {
 
   /**
    *
-   * @param {string} id - Folder name for item in collection
+   * @param {string} item - folder name for item in collection
    * @returns {Promise} - Promise object representing Array containing names for files in item folder
    */
-  async getItem (id) {
+  async getItem (item) {
     const items = await this.items()
     return new Promise((resolve, reject) => {
-      resolve(items[id])
+      resolve(items[item])
     })
   }
 
   /**
-     * @param {Object} item
+     * @param {Object} item - folder name for item
      * @returns {Promise} - Promise object represents XML metadata
     */
-  async metadata (id) {
+  async metadata (item) {
     try {
-      const metadata = await fs.readFile(`${this.src}/${id}/dublin_core.xml`, 'utf-8')
+      const metadata = await fs.readFile(`${this.src}/${item}/dublin_core.xml`, 'utf-8')
       return metadata
     } catch (err) {
       console.error(err)
@@ -62,7 +62,7 @@ class DspaceCollection {
    * returns dcvalue from dublin_core.xml
    *
    * @param {Object} options
-   * @param {Object} options.metadata - Promise returned from this.object()
+   * @param {Object} options.item - folder name for item in collection
    * @param {String} options.element - dcvalue.element (eg. identifier)
    * @param {String} options.qualifier - dcvalue.qualifier (eg. gtid)
    * @returns {Promise} - Promise representing dcvalue as a string
@@ -79,6 +79,26 @@ class DspaceCollection {
   }
 
   /**
+   * 
+   * @param {Object} options 
+   * @param {} options.item
+   * @param {Array} options.descriptions - Array with dcvalues to be returned
+   * @returns 
+   */
+  async getDcvalues (options) {
+    let values = []
+    const metadata = await this.getItemMetadata(options.item)
+    metadata.dublin_core.dcvalue.forEach((dcvalue) => {
+      options.descriptions.forEach(description => {
+        if (dcvalue._attributes.element.toLowerCase() === description.element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === description.qualifier.toLowerCase()) {
+          values.push(dcvalue)
+        }
+      })
+    })
+    return values
+  }
+
+  /**
    * @param {String} file - An XML string
    * @returns {Promise} Promise object represents JSON
    */
@@ -91,7 +111,7 @@ class DspaceCollection {
 
   /**
    *
-   * @param {String} item - index of item in collection
+   * @param {String} item - folder name of item in collection
    * @returns {Promise} - Promise object representing JSON for one item
    */
   async getItemJson (item) {
@@ -112,7 +132,7 @@ class DspaceCollection {
   }
 
   /**
-   * @param {String} item - index of item in collection
+   * @param {String} item - folder name of item in collection
    * @returns {Promise} - Promise object represents JS object for one item
    */
   async getItemMetadata (item) {
@@ -121,24 +141,51 @@ class DspaceCollection {
     return object
   }
 
-  async getItemImage (options) {
-    const value = await this.getDcvalue(options)
+  /**
+   * @param {Object} item - folder name for item in collection
+   * @returns {String} file name for image
+   */
+  async getItemImage (item) {
+    let image
+    const value = await this.getDcvalue({item: item, element: 'identifier', qualifier: 'gtID'})
     const index = value.search(/-|_/)
     const id = value.slice(index + 1)
     const idRegex = new RegExp(id)
-    const item = await collection.getItem(options.item)
-    item.forEach(file => {
+    const folder = await collection.getItem(item)
+    folder.forEach(file => {
       const singleExtension = /^[^.]+\.[^.]+$/ // returns string with only one period, explanation: https://regex101.com/r/gDGQu3/1
       if (idRegex.test(file) && singleExtension.test(file)) {
-        console.log(file)
+        image = file
       }
     })
+    return image
   }
 }
 
 // create a DspaceCollection instance
 const collection = new DspaceCollection('../../collections/collection_67')
+const descriptions = [
+  {'element': 'title', 'qualifier': 'none'},
+  {'element': 'contributor', 'qualifier': 'author'},
+  {'element': 'date', 'qualifier': 'none'}
+]
+collection.getDcvalues({
+  item: '1',
+  descriptions: descriptions
+}).then(values => console.log(values))
+//collection.getItemImage('20').then(image => console.log(image))
+/*collection
+  .getItemMetadata('1')
+  .then(xml => {
+    const descriptions = [
+      {'element': 'title', 'qualifier': 'none'},
+      {'element': 'contributor', 'qualifier': 'author'},
+      {'element': 'date', 'qualifier': 'none'}
+    ]
 
+    
+    xml.dublin_core.dcvalue.forEach(value => console.log(value))
+  })
 // return XML as JSON
 // collection.getItemJson('1').then(json => console.log(json))
 
@@ -156,7 +203,7 @@ const collection = new DspaceCollection('../../collections/collection_67')
  * then gets all contents of first item and returns src image
  * I can then pass this file name to sharp to create a pyramid tiff
  */
-collection.getItemImage({ item: '1', element: 'identifier', qualifier: 'GTid' })
+//collection.getItemImage({ item: '1', element: 'identifier', qualifier: 'GTid' })
 /* collection
   .getDcvalue({item: '1', element: 'identifier', qualifier: 'GTid'})
   .then(value => {
