@@ -1,8 +1,9 @@
 // The Promise API is only availble via dot notation prior to node v14.0.0
 import * as fs from 'fs/promises'
+import * as path from 'path'
 import * as XMLconverter from 'xml-js'
 // import tiff from 'tiff.js';
-// const COLLECTIONS = './collections';
+//const collectionsDir = path.
 
 /** Class representating a DSpace collection */
 class DspaceCollection {
@@ -23,7 +24,8 @@ class DspaceCollection {
       const items = await fs.readdir(this.src, { encoding: 'utf-8', withFileTypes: true })
       for (const item of items) {
         if (item.isDirectory()) {
-          const files = await fs.readdir(this.src + '/' + item.name, 'utf-8')
+          //const files = await fs.readdir(this.src + '/' + item.name, 'utf-8')
+          const files = await fs.readdir(path.join(this.src, item.name), 'utf-8')
           contents[item.name] = files
         }
       }
@@ -51,7 +53,8 @@ class DspaceCollection {
     */
   async metadata (item) {
     try {
-      const metadata = await fs.readFile(`${this.src}/${item}/dublin_core.xml`, 'utf-8')
+      //const metadata = await fs.readFile(`${this.src}/${item}/dublin_core.xml`, 'utf-8')
+      const metadata = await fs.readFile(path.join(this.src, item, 'dublin_core.xml'), 'utf-8')
       return metadata
     } catch (err) {
       console.error(err)
@@ -169,7 +172,8 @@ class DspaceCollection {
 
 // create a DspaceCollection instance
 const collection = new DspaceCollection('../../collections/collection_67')
-const descriptions = [
+collection.items().then(items => console.log(items))
+/*const descriptions = [
   {'element': 'title', 'qualifier': 'none'},
   {'element': 'contributor', 'qualifier': 'author'},
   {'element': 'date', 'qualifier': 'none'}
