@@ -16,9 +16,6 @@ class Canvas extends Template {
     this.width = info.width
   }
 
-  
-
-
   /**
    * @param {String} label
    */

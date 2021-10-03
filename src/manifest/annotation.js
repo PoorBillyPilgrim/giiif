@@ -37,8 +37,8 @@ class Annotation extends Template {
   }
 
   /**
-   * 
-   * @param {String} path 
+   *
+   * @param {String} path
    */
   setImagePath (path) {
 

@@ -15,11 +15,11 @@ const collection = new DspaceCollection('../../collections/collection_67')
 // 2. create pyramid TIFF
 const createTiff = async (item, dest) => {
   // 2.1. get image path and file name for item
-  const {parse, imagePath} = await collection.parseItemImage(item)
+  const { parse, imagePath } = await collection.parseItemImage(item)
   // 2.2. convert image to Pyramid TIFF and name as file name without original ext
   return sharp(imagePath)
     .tiff({ tile: true, pyramid: true })
-    .toFile(path.resolve(dest,`${parse.name}.tif`))
+    .toFile(path.resolve(dest, `${parse.name}.tif`))
 }
 
 createTiff('1', '../../images/') // write image for item one to ../../images/
@@ -49,18 +49,18 @@ const MANIFEST_CONFIG = {
 
 // 4. add metadata from dublin_core.xml to manifest
 // 4.1. define which metadata you want depending on xml source file
-const metadataConfig = { 
+const metadataConfig = {
   item: '1',
   descriptions: [
-    {'element': 'title', 'qualifier': 'none'},
-    {'element': 'contributor', 'qualifier': 'author'},
-    {'element': 'date', 'qualifier': 'none'}
+    { element: 'title', qualifier: 'none' },
+    { element: 'contributor', qualifier: 'author' },
+    { element: 'date', qualifier: 'none' }
   ]
 }
 /* const addMetadata = async (collection) => {
   let metadata = await collection.getDescriptiveMetadata({item: item, descriptions: descriptions})
   manifest.setMetadata(metadata)
-} 
+}
 addMetadata(collection)
 */
 
@@ -75,7 +75,7 @@ const buildManifest = async (options) => {
   const canvasInfo = { id: options.canvas.id, label: options.canvas.label, height: service.height, width: service.width }
   const annotationInfo = { id: options.annotation.id }
   const AnnotationPageInfo = { id: options.annotationPage.id }
-  
+
   const manifest = new ManifestFactory.Manifest(manifestInfo)
   const canvas = new ManifestFactory.Canvas(canvasInfo)
   const annotation = new ManifestFactory.Annotation(annotationInfo)
@@ -95,7 +95,7 @@ const buildManifest = async (options) => {
   canvas.addItems(annotationPage)
   manifest.addItems(canvas)
 
-  let metadata = await collection.getDescriptiveMetadata(metadataConfig)
+  const metadata = await collection.getDescriptiveMetadata(metadataConfig)
   manifest.setMetadata(metadata)
 
   manifest.toFile({

@@ -3,7 +3,7 @@ import * as fs from 'fs/promises'
 import * as path from 'path'
 import * as XMLconverter from 'xml-js'
 // import tiff from 'tiff.js';
-//const collectionsDir = path.
+// const collectionsDir = path.
 
 /** Class representating a DSpace collection */
 export class DspaceCollection {
@@ -16,12 +16,12 @@ export class DspaceCollection {
   }
 
   /**
-   * 
-   * @param {item} item 
+   *
+   * @param {item} item
    * @returns {String} - file path to item
    */
   itemPath (item) {
-    if (typeof item !== 'string') throw new Error("item must be a string")
+    if (typeof item !== 'string') throw new Error('item must be a string')
     return path.join(this.src, item)
   }
 
@@ -52,7 +52,7 @@ export class DspaceCollection {
   async getItem (item) {
     const items = await this.items()
     return new Promise((resolve, reject) => {
-      if (typeof item !== 'string') reject(new Error("item must be a string"))
+      if (typeof item !== 'string') reject(new Error('item must be a string'))
       resolve(items[item])
     })
   }
@@ -63,7 +63,7 @@ export class DspaceCollection {
     */
   async metadata (item) {
     try {
-      if (typeof item !== 'string') throw new Error("item must be a string")
+      if (typeof item !== 'string') throw new Error('item must be a string')
       const metadata = await fs.readFile(path.join(this.src, item, 'dublin_core.xml'), 'utf-8')
       return metadata
     } catch (err) {
@@ -92,22 +92,22 @@ export class DspaceCollection {
   }
 
   /**
-   * 
-   * @param {Object} options 
+   *
+   * @param {Object} options
    * @param {} options.item
    * @param {Array} options.descriptions - Array with dcvalues to be returned
-   * @returns 
+   * @returns
    */
   async getDescriptiveMetadata (options) {
-    let values = []
+    const values = []
     const metadata = await this.getItemMetadata(options.item)
     metadata.dublin_core.dcvalue.forEach((dcvalue) => {
       options.descriptions.forEach(description => {
         if (dcvalue._attributes.element.toLowerCase() === description.element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === description.qualifier.toLowerCase()) {
-          let label = description.qualifier === 'none' ? description.element : description.qualifier
-          let jsonld = {
-            "label": { "en" : [label] },
-            "value": { "en" : [dcvalue._text] }
+          const label = description.qualifier === 'none' ? description.element : description.qualifier
+          const jsonld = {
+            label: { en: [label] },
+            value: { en: [dcvalue._text] }
           }
           values.push(jsonld)
         }
@@ -165,7 +165,7 @@ export class DspaceCollection {
    */
   async getItemImage (item) {
     let image
-    const value = await this.getDcvalue({item: item, element: 'identifier', qualifier: 'gtID'})
+    const value = await this.getDcvalue({ item: item, element: 'identifier', qualifier: 'gtID' })
     const index = value.search(/-|_/)
     const id = value.slice(index + 1)
     const idRegex = new RegExp(id)
@@ -180,13 +180,13 @@ export class DspaceCollection {
   }
 
   /**
-   * 
-   * @param {String} item 
-   * @returns 
+   *
+   * @param {String} item
+   * @returns
    */
   async parseItemImage (item) {
-    let image = await this.getItemImage(item)
-    let imagePath = path.resolve(this.itemPath(item), image)
+    const image = await this.getItemImage(item)
+    const imagePath = path.resolve(this.itemPath(item), image)
     return {
       parse: path.parse(imagePath),
       imagePath: imagePath
@@ -195,10 +195,10 @@ export class DspaceCollection {
 }
 
 // create a DspaceCollection instance
-//const collection = new DspaceCollection('../../collections/collection_67')
-//collection.getItem(1).then(met => console.log(met)).catch(err => console.log(err))
-//collection.items().then(items => console.log(items))
-/*const descriptions = [
+// const collection = new DspaceCollection('../../collections/collection_67')
+// collection.getItem(1).then(met => console.log(met)).catch(err => console.log(err))
+// collection.items().then(items => console.log(items))
+/* const descriptions = [
   {'element': 'title', 'qualifier': 'none'},
   {'element': 'contributor', 'qualifier': 'author'},
   {'element': 'date', 'qualifier': 'none'}
@@ -217,7 +217,6 @@ collection.getDescriptiveMetadata({
       {'element': 'date', 'qualifier': 'none'}
     ]
 
-    
     xml.dublin_core.dcvalue.forEach(value => console.log(value))
   })
 // return XML as JSON
@@ -237,7 +236,7 @@ collection.getDescriptiveMetadata({
  * then gets all contents of first item and returns src image
  * I can then pass this file name to sharp to create a pyramid tiff
  */
-//console.log(collection.itemPath('1'))
+// console.log(collection.itemPath('1'))
 /* collection
   .getDcvalue({item: '1', element: 'identifier', qualifier: 'GTid'})
   .then(value => {

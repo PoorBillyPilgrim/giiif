@@ -12,8 +12,8 @@ class Template {
   }
 
   /**
-   * 
-   * @param {string} url 
+   *
+   * @param {string} url
    */
   setId (url) {
     if (typeof url !== 'string') throw new Error('url value must be a string')
