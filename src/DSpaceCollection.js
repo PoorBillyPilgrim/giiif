@@ -15,6 +15,19 @@ class DspaceCollection {
     this.src = src
   }
 
+
+
+
+  /**
+   * 
+   * @param {item} item 
+   * @returns 
+   */
+  itemPath (item) {
+    if (typeof item !== 'string') throw new Error("item must be a string")
+    return path.join(this.src, item)
+  }
+
   /**
    * @returns {Promise} - Promise array represents contents of collection
    */
@@ -24,7 +37,6 @@ class DspaceCollection {
       const items = await fs.readdir(this.src, { encoding: 'utf-8', withFileTypes: true })
       for (const item of items) {
         if (item.isDirectory()) {
-          //const files = await fs.readdir(this.src + '/' + item.name, 'utf-8')
           const files = await fs.readdir(path.join(this.src, item.name), 'utf-8')
           contents[item.name] = files
         }
@@ -43,6 +55,7 @@ class DspaceCollection {
   async getItem (item) {
     const items = await this.items()
     return new Promise((resolve, reject) => {
+      if (typeof item !== 'string') reject(new Error("item must be a string"))
       resolve(items[item])
     })
   }
@@ -53,7 +66,7 @@ class DspaceCollection {
     */
   async metadata (item) {
     try {
-      //const metadata = await fs.readFile(`${this.src}/${item}/dublin_core.xml`, 'utf-8')
+      if (typeof item !== 'string') throw new Error("item must be a string")
       const metadata = await fs.readFile(path.join(this.src, item, 'dublin_core.xml'), 'utf-8')
       return metadata
     } catch (err) {
@@ -150,7 +163,7 @@ class DspaceCollection {
   }
 
   /**
-   * @param {Object} item - folder name for item in collection
+   * @param {String} item - folder name for item in collection
    * @returns {String} file name for image
    */
   async getItemImage (item) {
@@ -168,11 +181,23 @@ class DspaceCollection {
     })
     return image
   }
+
+  /**
+   * 
+   * @param {String} item 
+   * @returns 
+   */
+  async parseItemImage (item) {
+    let image = await this.getItemImage(item)
+    let imagePath = path.resolve(this.itemPath(item), image)
+    return path.parse(imagePath)
+  }
 }
 
 // create a DspaceCollection instance
 const collection = new DspaceCollection('../../collections/collection_67')
-collection.items().then(items => console.log(items))
+//collection.getItem(1).then(met => console.log(met)).catch(err => console.log(err))
+//collection.items().then(items => console.log(items))
 /*const descriptions = [
   {'element': 'title', 'qualifier': 'none'},
   {'element': 'contributor', 'qualifier': 'author'},
@@ -212,7 +237,7 @@ collection.getDescriptiveMetadata({
  * then gets all contents of first item and returns src image
  * I can then pass this file name to sharp to create a pyramid tiff
  */
-//collection.getItemImage({ item: '1', element: 'identifier', qualifier: 'GTid' })
+console.log(collection.itemPath('1'))
 /* collection
   .getDcvalue({item: '1', element: 'identifier', qualifier: 'GTid'})
   .then(value => {
