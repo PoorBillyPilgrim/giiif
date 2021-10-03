@@ -85,7 +85,7 @@ class DspaceCollection {
    * @param {Array} options.descriptions - Array with dcvalues to be returned
    * @returns 
    */
-  async getDcvalues (options) {
+  async getDescriptiveMetadata (options) {
     let values = []
     const metadata = await this.getItemMetadata(options.item)
     metadata.dublin_core.dcvalue.forEach((dcvalue) => {
@@ -174,7 +174,7 @@ const descriptions = [
   {'element': 'contributor', 'qualifier': 'author'},
   {'element': 'date', 'qualifier': 'none'}
 ]
-collection.getDcvalues({
+collection.getDescriptiveMetadata({
   item: '1',
   descriptions: descriptions
 }).then(values => console.log(JSON.stringify(values, null, 2)))

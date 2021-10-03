@@ -25,6 +25,17 @@ const MANIFEST_CONFIG = {
   }
 }
 
+/**
+ * Adding metadata from dublin_core.xml 
+ */
+// const collection = new DspaceCollection(collectionFolder)
+/* const addMetadata = async (collection) => {
+  let metadata = await collection.getDescriptiveMetadata({item: item, descriptions: descriptions})
+  manifest.setMetadata(metadata)
+} 
+
+*/
+
 const buildManifest = async (options) => {
   const res = await axios.get('http://localhost:8182/iiif/3/image.tif/info.json')
   // service contains the entire info.json from IIIF image server

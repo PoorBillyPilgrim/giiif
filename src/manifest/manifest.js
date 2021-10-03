@@ -31,7 +31,7 @@ class Manifest extends Template {
      * @param {Object} src - should be from a dublin_core.xml file
      */
   setMetadata (src) {
-    this.metadata = [src]
+    this.metadata = src
   }
 
   /** Log Manifest to console */
