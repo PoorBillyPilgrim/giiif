@@ -6,7 +6,7 @@ import * as XMLconverter from 'xml-js'
 //const collectionsDir = path.
 
 /** Class representating a DSpace collection */
-class DspaceCollection {
+export class DspaceCollection {
   /**
      * Create a DSpace collection
      * @param {String} src - file path to folder containing DSpace dublin_core.xml and image
@@ -15,13 +15,10 @@ class DspaceCollection {
     this.src = src
   }
 
-
-
-
   /**
    * 
    * @param {item} item 
-   * @returns 
+   * @returns {String} - file path to item
    */
   itemPath (item) {
     if (typeof item !== 'string') throw new Error("item must be a string")
@@ -172,7 +169,7 @@ class DspaceCollection {
     const index = value.search(/-|_/)
     const id = value.slice(index + 1)
     const idRegex = new RegExp(id)
-    const folder = await collection.getItem(item)
+    const folder = await this.getItem(item)
     folder.forEach(file => {
       const singleExtension = /^[^.]+\.[^.]+$/ // returns string with only one period, explanation: https://regex101.com/r/gDGQu3/1
       if (idRegex.test(file) && singleExtension.test(file)) {
@@ -190,12 +187,15 @@ class DspaceCollection {
   async parseItemImage (item) {
     let image = await this.getItemImage(item)
     let imagePath = path.resolve(this.itemPath(item), image)
-    return path.parse(imagePath)
+    return {
+      parse: path.parse(imagePath),
+      imagePath: imagePath
+    }
   }
 }
 
 // create a DspaceCollection instance
-const collection = new DspaceCollection('../../collections/collection_67')
+//const collection = new DspaceCollection('../../collections/collection_67')
 //collection.getItem(1).then(met => console.log(met)).catch(err => console.log(err))
 //collection.items().then(items => console.log(items))
 /*const descriptions = [
@@ -237,7 +237,7 @@ collection.getDescriptiveMetadata({
  * then gets all contents of first item and returns src image
  * I can then pass this file name to sharp to create a pyramid tiff
  */
-console.log(collection.itemPath('1'))
+//console.log(collection.itemPath('1'))
 /* collection
   .getDcvalue({item: '1', element: 'identifier', qualifier: 'GTid'})
   .then(value => {
