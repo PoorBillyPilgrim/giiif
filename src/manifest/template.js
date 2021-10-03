@@ -12,6 +12,15 @@ class Template {
   }
 
   /**
+   * 
+   * @param {string} url 
+   */
+  setId (url) {
+    if (typeof url !== 'string') throw new Error('url value must be a string')
+    this.id += url
+  }
+
+  /**
      * Add items Array to IIIF resource
      * @param {IIIF Resource} items - IIIF resource created from ManifestFactory module
      */

@@ -35,6 +35,14 @@ class Annotation extends Template {
     this.body.width = options.width
     this.body.service.push(options.service)
   }
+
+  /**
+   * 
+   * @param {String} path 
+   */
+  setImagePath (path) {
+
+  }
 }
 
 export default Annotation

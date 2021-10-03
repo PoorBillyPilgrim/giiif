@@ -9,58 +9,62 @@ import sharp from 'sharp'
  * served from a IIIF image server
  */
 
+// 1. create DspaceCollection
+const collection = new DspaceCollection('../../collections/collection_67')
 
-const createTiff = async (folder, item) => {
-  // 1. create DspaceCollection
-  const collection = new DspaceCollection(folder)
-  // 2. get image path and file name for item
+// 2. create pyramid TIFF
+const createTiff = async (item, dest) => {
+  // 2.1. get image path and file name for item
   const {parse, imagePath} = await collection.parseItemImage(item)
-  // 3. convert image to Pyramid TIFF and name as file name without original ext
-  
-  //console.log(path.resolve(dir, name))
-  sharp(imagePath)
-    .tiff({
-      tile: true,
-      pyramid: true
-    })
-    .toFile(`../../images/${parse.name}.tif`)
-    .then(info => console.log(info))
-    .catch(err => console.error(err))
+  // 2.2. convert image to Pyramid TIFF and name as file name without original ext
+  return sharp(imagePath)
+    .tiff({ tile: true, pyramid: true })
+    .toFile(path.resolve(dest,`${parse.name}.tif`))
 }
 
-createTiff('../../collections/collection_67', '1')
+createTiff('1', '../../images/') // write image for item one to ../../images/
+  .then(info => console.log(info))
+  .catch(err => console.error(err))
 
-// 3. convert image to Pyramid TIFF and name as file name without original ext
-
-// params for different resources within manifest
-const ITEM_URL = 'http://localhost:8887' // location for Web Server for Chrome
+// 3. Define identifiers for resources
+// 3.1. set server location
+const SERVER = 'http://localhost:8887' // location for Web Server for Chrome
+// 3.2. set params for resources; pass config object to buildManifest
 const MANIFEST_CONFIG = {
   manifest: {
-    id: `${ITEM_URL}/manifestTest.json`,
+    id: `${SERVER}/manifestjson`,
     label: { en: ['this is a test label'] }
   },
   canvas: {
-    id: `${ITEM_URL}/canvas`,
+    id: `${SERVER}/canvas`,
     label: 'Canvas with a single IIIF image'
   },
   annotation: {
-    id: `${ITEM_URL}/annotation`
+    id: `${SERVER}/annotation`
   },
   annotationPage: {
-    id: `${ITEM_URL}/page`
+    id: `${SERVER}/page`
   }
 }
 
-/**
- * Adding metadata from dublin_core.xml 
- */
-// const collection = new DspaceCollection(collectionFolder)
+// 4. add metadata from dublin_core.xml to manifest
+// 4.1. define which metadata you want depending on xml source file
+const metadataConfig = { 
+  item: '1',
+  descriptions: [
+    {'element': 'title', 'qualifier': 'none'},
+    {'element': 'contributor', 'qualifier': 'author'},
+    {'element': 'date', 'qualifier': 'none'}
+  ]
+}
 /* const addMetadata = async (collection) => {
   let metadata = await collection.getDescriptiveMetadata({item: item, descriptions: descriptions})
   manifest.setMetadata(metadata)
 } 
-
+addMetadata(collection)
 */
+
+// 5. save manifest file in item folder
 
 const buildManifest = async (options) => {
   const res = await axios.get('http://localhost:8182/iiif/3/image.tif/info.json')
@@ -71,7 +75,7 @@ const buildManifest = async (options) => {
   const canvasInfo = { id: options.canvas.id, label: options.canvas.label, height: service.height, width: service.width }
   const annotationInfo = { id: options.annotation.id }
   const AnnotationPageInfo = { id: options.annotationPage.id }
-
+  
   const manifest = new ManifestFactory.Manifest(manifestInfo)
   const canvas = new ManifestFactory.Canvas(canvasInfo)
   const annotation = new ManifestFactory.Annotation(annotationInfo)
@@ -91,12 +95,14 @@ const buildManifest = async (options) => {
   canvas.addItems(annotationPage)
   manifest.addItems(canvas)
 
+  let metadata = await collection.getDescriptiveMetadata(metadataConfig)
+  manifest.setMetadata(metadata)
+
   manifest.toFile({
     compact: false,
-    file: './manifestTest.json'
+    file: './manifest.json'
   })
-
   console.log('-----Manifest created-----')
 }
 
-//buildManifest(MANIFEST_CONFIG)
+buildManifest(MANIFEST_CONFIG)

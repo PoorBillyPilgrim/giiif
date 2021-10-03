@@ -11,9 +11,20 @@ class Canvas extends Template {
      */
   constructor (info) {
     super(info.id, 'Canvas')
-    this.label = { en: [info.label] }
+    this.label = { en: [] }
     this.height = info.height
     this.width = info.width
+  }
+
+  
+
+
+  /**
+   * @param {String} label
+   */
+  setLabel (label) {
+    if (typeof label !== 'string') throw new Error('label value must be a string')
+    this.label.en = [label]
   }
 }
 

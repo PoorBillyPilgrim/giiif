@@ -12,7 +12,8 @@ class Manifest extends Template {
      */
   constructor (info) {
     super(info.id, 'Manifest')
-    this.label = info.label
+    this.label = ''
+    this.metadata = null
   }
 
   /**
