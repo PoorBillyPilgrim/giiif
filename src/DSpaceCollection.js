@@ -91,7 +91,12 @@ class DspaceCollection {
     metadata.dublin_core.dcvalue.forEach((dcvalue) => {
       options.descriptions.forEach(description => {
         if (dcvalue._attributes.element.toLowerCase() === description.element.toLowerCase() && dcvalue._attributes.qualifier.toLowerCase() === description.qualifier.toLowerCase()) {
-          values.push(dcvalue)
+          let label = description.qualifier === 'none' ? description.element : description.qualifier
+          let jsonld = {
+            "label": { "en" : [label] },
+            "value": { "en" : [dcvalue._text] }
+          }
+          values.push(jsonld)
         }
       })
     })
@@ -172,7 +177,7 @@ const descriptions = [
 collection.getDcvalues({
   item: '1',
   descriptions: descriptions
-}).then(values => console.log(values))
+}).then(values => console.log(JSON.stringify(values, null, 2)))
 //collection.getItemImage('20').then(image => console.log(image))
 /*collection
   .getItemMetadata('1')
