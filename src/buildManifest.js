@@ -1,10 +1,36 @@
 import { ManifestFactory } from './manifest/index.js'
+import { DspaceCollection } from './DspaceCollection.js'
+import * as path from 'path'
 import axios from 'axios'
+import sharp from 'sharp'
 
 /**
  * Simple module for generating a IIIF Manifest for a single image
  * served from a IIIF image server
  */
+
+
+const createTiff = async (folder, item) => {
+  // 1. create DspaceCollection
+  const collection = new DspaceCollection(folder)
+  // 2. get image path and file name for item
+  const {parse, imagePath} = await collection.parseItemImage(item)
+  // 3. convert image to Pyramid TIFF and name as file name without original ext
+  
+  //console.log(path.resolve(dir, name))
+  sharp(imagePath)
+    .tiff({
+      tile: true,
+      pyramid: true
+    })
+    .toFile(`../../images/${parse.name}.tif`)
+    .then(info => console.log(info))
+    .catch(err => console.error(err))
+}
+
+createTiff('../../collections/collection_67', '1')
+
+// 3. convert image to Pyramid TIFF and name as file name without original ext
 
 // params for different resources within manifest
 const ITEM_URL = 'http://localhost:8887' // location for Web Server for Chrome
@@ -73,4 +99,4 @@ const buildManifest = async (options) => {
   console.log('-----Manifest created-----')
 }
 
-buildManifest(MANIFEST_CONFIG)
+//buildManifest(MANIFEST_CONFIG)
