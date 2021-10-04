@@ -195,7 +195,8 @@ export class DspaceCollection {
 }
 
 // create a DspaceCollection instance
-// const collection = new DspaceCollection('../../collections/collection_67')
+//const collection = new DspaceCollection('../../collections/collection_67')
+//collection.parseItemImage('1').then(info => console.log(info))
 // collection.getItem(1).then(met => console.log(met)).catch(err => console.log(err))
 // collection.items().then(items => console.log(items))
 /* const descriptions = [
