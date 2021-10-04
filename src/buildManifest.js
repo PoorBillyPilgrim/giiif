@@ -1,4 +1,4 @@
-import { ManifestFactory } from './manifest/index.js'
+import { ManifestFactory } from './manifest/factory.js'
 import { DspaceCollection } from './DspaceCollection.js'
 import * as path from 'path'
 import axios from 'axios'
@@ -22,50 +22,40 @@ const createTiff = async (item, dest) => {
     .toFile(path.resolve(dest, `${parse.name}.tif`))
 }
 
-createTiff('1', '../../images/') // write image for item one to ../../images/
-  .then(info => console.log(info))
-  .catch(err => console.error(err))
-
-// 3. Define identifiers for resources
+// 3. Define metadata and identifiers for resources
 // 3.1. set server location
-const SERVER = 'http://localhost:8887' // location for Web Server for Chrome
+const MANIFEST_SERVER = 'http://localhost:8887' // location for Web Server for Chrome
 // 3.2. set params for resources; pass config object to buildManifest
 const MANIFEST_CONFIG = {
+  // 3.3. add metadata from dublin_core.xml to manifest
+  // identify which item for which you want to build a manifest
+  // basic metadata for title, author, and date created for item 
+  metadata: {
+    item: '1', // name of item folder
+    descriptions: [
+      { element: 'title', qualifier: 'none' },
+      { element: 'contributor', qualifier: 'author' },
+      { element: 'date', qualifier: 'none' }
+    ]
+  },
+  // ids and labels for resources
   manifest: {
-    id: `${SERVER}/manifestjson`,
+    id: `${MANIFEST_SERVER}/manifest.json`,
     label: { en: ['this is a test label'] }
   },
   canvas: {
-    id: `${SERVER}/canvas`,
+    id: `${MANIFEST_SERVER}/canvas`,
     label: 'Canvas with a single IIIF image'
   },
   annotation: {
-    id: `${SERVER}/annotation`
+    id: `${MANIFEST_SERVER}/annotation`
   },
   annotationPage: {
-    id: `${SERVER}/page`
+    id: `${MANIFEST_SERVER}/page`
   }
 }
 
-// 4. add metadata from dublin_core.xml to manifest
-// 4.1. define which metadata you want depending on xml source file
-const metadataConfig = {
-  item: '1',
-  descriptions: [
-    { element: 'title', qualifier: 'none' },
-    { element: 'contributor', qualifier: 'author' },
-    { element: 'date', qualifier: 'none' }
-  ]
-}
-/* const addMetadata = async (collection) => {
-  let metadata = await collection.getDescriptiveMetadata({item: item, descriptions: descriptions})
-  manifest.setMetadata(metadata)
-}
-addMetadata(collection)
-*/
-
 // 5. save manifest file in item folder
-
 const buildManifest = async (options) => {
   const res = await axios.get('http://localhost:8182/iiif/3/image.tif/info.json')
   // service contains the entire info.json from IIIF image server
@@ -95,7 +85,7 @@ const buildManifest = async (options) => {
   canvas.addItems(annotationPage)
   manifest.addItems(canvas)
 
-  const metadata = await collection.getDescriptiveMetadata(metadataConfig)
+  const metadata = await collection.getDescriptiveMetadata(options.metadata)
   manifest.setMetadata(metadata)
 
   manifest.toFile({
@@ -104,5 +94,12 @@ const buildManifest = async (options) => {
   })
   console.log('-----Manifest created-----')
 }
-
-buildManifest(MANIFEST_CONFIG)
+/**
+ * build pyramid tiff and manifest for item 1 
+ */
+createTiff('1', '../../images/') 
+  .then(info => {
+    console.log('image info:', info)
+    buildManifest(MANIFEST_CONFIG) 
+  })
+  .catch(err => console.error(err))
