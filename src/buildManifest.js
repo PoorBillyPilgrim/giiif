@@ -1,5 +1,6 @@
+//import dotenv from 'dotenv'
 import { Resources } from './manifest/resources.js'
-import { DspaceCollection } from './DspaceCollection.js'
+import { DspaceCollection } from './DSpaceCollection.js'
 import * as path from 'path'
 import axios from 'axios'
 import sharp from 'sharp'
@@ -10,27 +11,28 @@ import sharp from 'sharp'
  */
 
 // 1. create DspaceCollection
-const baseDir = '/Users/tjjones93/Google Drive/iiif-research-project'
-const collectionDir = '/collections/collection_67'
+const baseDir = process.env.BASE_DIR
+const collectionDir = process.env.COLLECTION_DIR
 
-const collection = new DspaceCollection(path.join(baseDir,collectionDir))
+const collection = new DspaceCollection(path.join(baseDir, collectionDir))
 
 // 2. create pyramid TIFF
 const createTiff = async (item, dest) => {
   // 2.1. get image path and file name for item
   const { parse, imagePath } = await collection.parseItemImage(item)
   // 2.2. convert image to Pyramid TIFF and name as file name without original ext
+  
   return sharp(imagePath)
     .tiff({ tile: true, pyramid: true })
-    .toFile(path.resolve(dest, `${parse.name}.tif`))
+    .toFile(path.join(dest, `${parse.name}.tif`))
 }
 
 // 3. Define metadata and identifiers for resources
 // 3.1. set server location
 const MANIFEST_SERVER = 'http://localhost:8887' // location for Web Server for Chrome
-const IMAGE_SERVER = 'http://localhost:8182'
-const ITEM = '20'
-const TIFF_DEST = '../../images/'
+const IMAGE_SERVER = process.env.IMAGE_SERVER
+const ITEM = '19'
+const TIFF_DEST = '/home/tjones357/iiif-research-project/images'
 // 3.2. set params for resources; pass config object to buildManifest
 const MANIFEST_CONFIG = {
   // 3.3. add metadata from dublin_core.xml to manifest
@@ -44,7 +46,7 @@ const MANIFEST_CONFIG = {
       { element: 'date', qualifier: 'none' }
     ]
   },
-  // ids and labels for resources
+  imageServer: IMAGE_SERVER,
   manifest: {
     id: `${MANIFEST_SERVER}${collectionDir}/${ITEM}/manifest.json`,
     label: { en: ['this is a test label'] }
@@ -114,3 +116,5 @@ createTiff(ITEM, TIFF_DEST)
     buildManifest(MANIFEST_CONFIG) 
   })
   .catch(err => console.error(err))
+
+  //createTiff(ITEM, TIFF_DEST) 
