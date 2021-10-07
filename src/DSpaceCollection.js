@@ -186,7 +186,7 @@ export class DspaceCollection {
    */
   async parseItemImage (item) {
     const image = await this.getItemImage(item)
-    const imagePath = path.resolve(this.itemPath(item), image)
+    const imagePath = path.join(this.itemPath(item), image)
     return {
       parse: path.parse(imagePath),
       imagePath: imagePath
